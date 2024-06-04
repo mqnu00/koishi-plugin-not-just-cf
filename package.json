@@ -1,7 +1,10 @@
 {
   "name": "koishi-plugin-not-just-cf",
   "description": "实现codeforces比赛日程的提醒，但不仅仅只有cf",
-  "version": "1.0.0",
+  "version": "1.0.2",
+  "contributors": [
+    "lzh 647983952@qq.com"
+  ],
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -9,15 +12,22 @@
     "dist"
   ],
   "license": "MIT",
-  "repository": {                           
+  "repository": {
     "type": "git",
-    "url": "git+https://github.com/alice/koishi-plugin-example.git"
+    "url": "git+https://github.com/mqnu00/koishi-plugin-not-just-cf.git"
   },
   "keywords": [
     "chatbot",
     "koishi",
-    "plugin"
+    "plugin",
+    "cf",
+    "codeforces"
   ],
+  "koishi": {
+    "description": {
+      "zh": "实现codeforces比赛日程的提醒，但不仅仅只有cf"
+    }
+  },
   "peerDependencies": {
     "koishi": "4.17.6"
   }

@@ -5,6 +5,18 @@ export const name = 'not-just-cf'
 
 export const inject = ['database']
 
+declare module 'koishi' {
+    interface Tables {
+        contest_alert: {
+            id: number
+            name: string
+            start_time: number
+            alert_time: number
+            cut_time: number
+        }
+    }
+}
+
 export interface Config { 
     alertContest?: boolean
     bot_platform?: string
@@ -34,6 +46,7 @@ export const Config: Schema<Config> = Schema.object({
 })
 
 export function alertTimer(ctx: Context, dtime: number, config: Config) {
+    
     const res_list = format_cf_read(ctx)
     const bot = ctx.bots[`${config.bot_platform}:${config.bot_selfid}`]
     if (bot == undefined) {
@@ -47,10 +60,18 @@ export function alertTimer(ctx: Context, dtime: number, config: Config) {
     
     ctx.timer.setTimeout(()=>{
         alertTimer(ctx, dtime, config)
-    }, 1000)
+    }, dtime)
 }
 
 export function apply(ctx: Context, config: Config) {
+    ctx.database.extend('contest_alert', {
+        id: 'unsigned',
+        name: 'string',
+        start_time: 'integer',
+        alert_time: 'integer',
+        cut_time: 'integer'
+    })
+
     ctx.on('ready', async () => {
         if (config.alertContest) {
             if (

@@ -26,9 +26,14 @@
   "koishi": {
     "description": {
       "zh": "实现codeforces比赛日程的提醒，但不仅仅只有cf"
+    },
+    "service": {
+      "required": [
+        "database"
+      ]
     }
   },
   "peerDependencies": {
-    "koishi": "4.17.6"
+    "koishi": "^4.17.6"
   }
 }

@@ -1,18 +1,19 @@
 import { Context } from "koishi";
 import { DateUtil } from "./utils/time_util";
+import { Contest } from "./type";
 
 export async function cf_api_read(ctx: Context) {
     let data = await ctx.http.get('https://codeforces.com/api/contest.list')
     if (data['status'] == 'OK') {
         let info: [] = data['result']
-        let res: Array<{[key:string]: any}> = [];
+        let res: Array<Contest> = [];
         for (let i = 0; i < info.length; i++){
             if (info[i]['phase'] == 'FINISHED') break
-            let dict: {[key:string]: any} = {}
-            dict['name'] = info[i]['name']
-            dict['stime'] = info[i]['startTimeSeconds']
-            dict['dtime'] = info[i]['durationSeconds']
-            res.push(dict)
+            let now = new Contest()
+            now.name = info[i]['name']
+            now.stime = info[i]['startTimeSeconds']
+            now.dtime = info[i]['durationSeconds']
+            res.push(now)
         }
         return res.reverse()
     }
@@ -25,12 +26,7 @@ export async function format_cf_read(ctx: Context) {
     let res = ''
     let spt = '--------------------'
     for (let i = 0; i < info.length; i++) {
-        let name = info[i]['name']
-        let stime = new DateUtil().formatDate(new Date(info[i]['stime']*1000).toLocaleString(), 'yyyy-MM-dd HH:mm:ss')
-        let dtime = info[i]['dtime'] / 60
-        let now: string = 
-        `${name}\n比赛时间：${stime}\n比赛时长：${dtime}分钟\n${spt}\n`
-        res = res.concat(now)
+        res = res.concat(info[i].to_string())
     }
     return res
 }

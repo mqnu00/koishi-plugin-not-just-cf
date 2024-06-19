@@ -1,5 +1,7 @@
 import { Context, Schema } from 'koishi'
 import { format_cf_read } from './cf'
+import { url } from 'inspector'
+import { other_oj_content } from './other_oj'
 
 export const name = 'not-just-cf'
 
@@ -22,49 +24,46 @@ export interface Group {
 }
 
 export interface Config { 
-    alertContestList?: Group[]
-    // alertContest?: boolean
-    bot_platform?: string
-    bot_selfid?: string
-    // alertTime?: number[]
-    // sendGroup?: number[]
+    alertConfig: {
+        alertContest?: boolean
+        botPlatform?: string
+        botSelfid?: string
+        alertContestList?: Group[]
+    }
 }
 
 
 export const Config: Schema<Config> = Schema.object({
-    alertContestList: Schema
-    .array(Schema.object({
-        group_id: Schema.string().description('群号').required()
-    }))
-    .description('添加群号，每天提醒群友比赛日程（默认早上9点）'),
-    // alertContest: Schema
-    // .boolean()
-    // .default(false)
-    // .description('是否定时通知比赛日程'),
-    // alertTime: Schema
-    // .array(Number)
-    // .description('比赛开始前多久提醒[分钟]'),
-    bot_platform: Schema
-    .string()
-    .description('机器人平台，可以查看适配器名称，比如adapter-onebot就填入onebot'),
-    bot_selfid: Schema
-    .string()
-    .description('机器人的账号'),
-    // sendGroup: Schema
-    // .array(Number)
-    // .description('发送给哪个群')
+    alertConfig: Schema
+    .intersect([
+        Schema.object({
+            alertContest: Schema.boolean().default(false).description('是否每天提醒群友比赛日程（默认早上9点）')
+        }),
+        Schema.union([
+            Schema.object({
+                alertContest: Schema.const(true).required(),
+                botPlatform: Schema.string().required().description('机器人平台，可以查看适配器名称，比如adapter-onebot就填入onebot'),
+                botSelfid: Schema.string().required().description('机器人的账号'),
+                alertContestList: Schema.array(Schema.object({
+                    group_id: Schema.string().description('发送给哪个群(群号)').required()
+                }))
+            }),
+            Schema.object({})
+        ])
+        
+    ])
 })
 
 export function alert_content(ctx: Context, config: Config, content: string) {
     
-    const bot = ctx.bots[`${config.bot_platform}:${config.bot_selfid}`]
+    const bot = ctx.bots[`${config.alertConfig.botPlatform}:${config.alertConfig.botSelfid}`]
     if (bot == undefined) {
-        console.log(`${config.bot_platform}:${config.bot_selfid}`)
+        console.log(`${config.alertConfig.botPlatform}:${config.alertConfig.botSelfid}`)
         console.log('koishi-plugin-not-just-cf config: wrong bot_platform or bot_selfid')
         return 
     }
-    for (let group_i = 0; group_i < config.alertContestList.length; group_i++) {
-        bot.sendMessage(config.alertContestList[group_i].group_id, content)
+    for (let group_i = 0; group_i < config.alertConfig.alertContestList.length; group_i++) {
+        bot.sendMessage(config.alertConfig.alertContestList[group_i].group_id, content)
     }
 }
 
@@ -93,6 +92,8 @@ export function apply(ctx: Context, config: Config) {
     //     cut_time: 'integer'
     // })
 
+    other_oj_content(ctx, 'NowCoder');
+
     ctx.on('ready', async () => {
         // if (config.alertContest) {
         //     if (
@@ -103,7 +104,7 @@ export function apply(ctx: Context, config: Config) {
         //     )
         //         throw new Error("koishi-plugin-not-just-cf need redo config");
         // }
-        if (config.alertContestList) {
+        if (config.alertConfig.alertContest) {
             
             alert_contest_list(ctx, config)
         }

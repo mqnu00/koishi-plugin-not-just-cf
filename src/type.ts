@@ -1,10 +1,12 @@
 import { DateUtil } from "./utils/time_util"
 export class Contest {
+    oj:string
     name: string
     stime: number
     dtime: number
     to_string() {
         let spt = '--------------------'
+        let oj = this.oj
         let name = this.name
         let stime = new DateUtil().formatDate(new Date(this.stime*1000).toLocaleString(), 'yyyy-MM-dd HH:mm:ss')
         let dtime = this.dtime / 60

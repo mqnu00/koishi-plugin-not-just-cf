@@ -1,7 +1,6 @@
-import { Context, Schema } from 'koishi'
-import { format_cf_read } from './cf'
+import { Context, Dict, Schema } from 'koishi'
 import { url } from 'inspector'
-import { other_oj_content } from './other_oj'
+import { oj_list, other_oj_content } from './oj'
 
 export const name = 'not-just-cf'
 
@@ -29,7 +28,8 @@ export interface Config {
         botPlatform?: string
         botSelfid?: string
         alertContestList?: Group[]
-    }
+    },
+    OJcontent?: string[]
 }
 
 
@@ -51,7 +51,12 @@ export const Config: Schema<Config> = Schema.object({
             Schema.object({})
         ])
         
-    ])
+    ]),
+    OJcontent: Schema
+    .array(Schema.union(oj_list))
+    .default(oj_list)
+    .role('checkbox')
+    .description('插件提供的比赛日程的平台')
 })
 
 export function alert_content(ctx: Context, config: Config, content: string) {
@@ -74,7 +79,8 @@ export async function alert_contest_list(ctx: Context, config: Config) {
     const tomorrow9am = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 9, 0, 0);
     // 计算时间戳差值
     const diff = tomorrow9am.getTime() - now.getTime();
-    const res_list = await format_cf_read(ctx)
+    // const res_list = await format_cf_read(ctx)
+    const res_list = '1'
     ctx.setTimeout(() => {
         alert_content(ctx, config, res_list)
     }, diff)
@@ -91,7 +97,7 @@ export function apply(ctx: Context, config: Config) {
     //     alert_time: 'integer',
     //     cut_time: 'integer'
     // })
-
+    console.log(config.OJContent)
     other_oj_content(ctx, 'NowCoder');
 
     ctx.on('ready', async () => {
@@ -119,7 +125,8 @@ export function apply(ctx: Context, config: Config) {
     ctx.command('cf.list', '提供cf比赛日程')
         .action(async ({ session }) => {
 
-            const res_list = format_cf_read(ctx)
+            // const res_list = format_cf_read(ctx)
+            const res_list = '1'
             return res_list
         })
 }

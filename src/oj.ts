@@ -1,6 +1,7 @@
 import { Context } from "koishi";
 import { Contest } from "./type";
 import { Config } from ".";
+import { error } from "console";
 
 export const oj_list = [
     'codeforces',
@@ -23,29 +24,44 @@ export async function cf_api_read(ctx: Context) {
             now.dtime = info[i]['durationSeconds']
             res.push(now)
         }
-        return res.reverse()
+        return res
     }
     return null
 }
 
-export async function other_oj_content(ctx: Context, contest_type: string) {
+export async function oj_content(ctx: Context, contest_type: string) {
 
-    let content = await ctx.http.get("https://algcontest.rainng.com/")
-    let res = []
-    for (let i = 0; i < content.length; i++) {
-        if (content[i].oj == contest_type && content[i].status == 'Register') {
-            let now = new Contest()
-            now.oj = contest_type
-            now.name = content[i].name
-            now.stime = content[i].startTimeStamp
-            now.dtime = content[i].endTimeStamp - content[i].startTimeStamp
-            res.push(now)
+    if (contest_type == 'codeforces') {
+        return cf_api_read(ctx)
+    } else {
+        let content = await ctx.http.get("https://algcontest.rainng.com/")
+        let res: Array<Contest> = []
+        for (let i = 0; i < content.length; i++) {
+            if (content[i].oj == contest_type && content[i].status == 'Register') {
+                let now = new Contest()
+                now.oj = contest_type
+                now.name = content[i].name
+                now.stime = content[i].startTimeStamp
+                now.dtime = content[i].endTimeStamp - content[i].startTimeStamp
+                res.push(now)
+            }
         }
+        return res
     }
-    return res
 }
 
-// export async function get_oj_format(config:Config) {
-//     let res: string[];
-//     if (config.alertConfig)
-// }
+export async function get_oj_format(ctx: Context, config:Config) {
+    let res = ''
+    let tmp: Array<Contest> = []
+    for (let i = 0; i < config.OJcontent.length; i++) {
+        tmp = tmp.concat(await oj_content(ctx, config.OJcontent[i]))
+    }
+    tmp = tmp.sort((a, b) => {
+        return a.stime - b.stime
+    })
+    for (let i = 0; i < tmp.length; i++) {
+        res = res.concat(tmp[i].to_string())
+    }
+    console.log(res)
+    return res;
+}

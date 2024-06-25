@@ -1,6 +1,6 @@
 import { Context, Dict, Schema } from 'koishi'
 import { url } from 'inspector'
-import { oj_list, other_oj_content } from './oj'
+import { get_oj_format, oj_list} from './oj'
 
 export const name = 'not-just-cf'
 
@@ -34,6 +34,11 @@ export interface Config {
 
 
 export const Config: Schema<Config> = Schema.object({
+    OJcontent: Schema
+    .array(Schema.union(oj_list))
+    .default(oj_list)
+    .role('checkbox')
+    .description('插件提供的比赛日程的平台'),
     alertConfig: Schema
     .intersect([
         Schema.object({
@@ -51,12 +56,7 @@ export const Config: Schema<Config> = Schema.object({
             Schema.object({})
         ])
         
-    ]),
-    OJcontent: Schema
-    .array(Schema.union(oj_list))
-    .default(oj_list)
-    .role('checkbox')
-    .description('插件提供的比赛日程的平台')
+    ])
 })
 
 export function alert_content(ctx: Context, config: Config, content: string) {
@@ -97,24 +97,22 @@ export function apply(ctx: Context, config: Config) {
     //     alert_time: 'integer',
     //     cut_time: 'integer'
     // })
-    console.log(config.OJContent)
-    other_oj_content(ctx, 'NowCoder');
 
-    ctx.on('ready', async () => {
-        // if (config.alertContest) {
-        //     if (
-        //         config.alertTime.length == 0 ||
-        //         config.bot_platform == null||
-        //         config.bot_selfid == null
+    // ctx.on('ready', async () => {
+    //     // if (config.alertContest) {
+    //     //     if (
+    //     //         config.alertTime.length == 0 ||
+    //     //         config.bot_platform == null||
+    //     //         config.bot_selfid == null
 
-        //     )
-        //         throw new Error("koishi-plugin-not-just-cf need redo config");
-        // }
-        if (config.alertConfig.alertContest) {
+    //     //     )
+    //     //         throw new Error("koishi-plugin-not-just-cf need redo config");
+    //     // }
+    //     // if (config.alertConfig.alertContest) {
             
-            alert_contest_list(ctx, config)
-        }
-    })
+    //     //     alert_contest_list(ctx, config)
+    //     // }
+    // })
     // if (config.alertContest) {
     //     ctx.setTimeout(()=>{
     //         alertTimer(ctx, 1000, config)
@@ -125,8 +123,8 @@ export function apply(ctx: Context, config: Config) {
     ctx.command('cf.list', '提供cf比赛日程')
         .action(async ({ session }) => {
 
-            // const res_list = format_cf_read(ctx)
-            const res_list = '1'
+            const res_list = await get_oj_format(ctx, config)
+            console.log(res_list)
             return res_list
         })
 }

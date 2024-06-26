@@ -1,7 +1,5 @@
 import { Context } from "koishi";
 import { Contest } from "./type";
-import { Config } from ".";
-import { error } from "console";
 
 export const oj_list = [
     'codeforces',
@@ -9,6 +7,58 @@ export const oj_list = [
     'LeetCode',
     'LuoGu'
 ]
+
+export const oj_abb = [
+    'cf',
+    'nc',
+    'lc',
+    'lg'
+]
+
+export const oj_alise = [
+    'cf--codeforces',
+    'nc--NowCoder',
+    'lc--LeetCode',
+    'lg--LuoGu'
+]
+
+export const oj_abbr: {[key: string]: {[key: string]: string}} = {
+    'codeforces': {
+        'abbr': 'cf',
+        'desc': 'codeforces（cf）'
+    },
+    'NowCoder': {
+        'abbr': 'nc',
+        'desc': '牛客（nc）'
+    },
+    'LeetCode': {
+        'abbr': 'lc',
+        'desc': '力扣（lc）'
+    },
+    'LuoGu': {
+        'abbr': 'lg',
+        'desc': '洛谷（lg）'
+    }
+}
+
+export const oj_check: {[key: string]: {[key: string]: string}} = {
+    'cf': {
+        'abbr': 'codeforces',
+        'desc': 'codeforces比赛日程'
+    },
+    'nc': {
+        'abbr': 'NowCoder',
+        'desc': 'NowCoder比赛日程'
+    },
+    'lc': {
+        'abbr': 'LeetCode',
+        'desc': 'LeetCode比赛日程'
+    },
+    'lg': {
+        'abbr': 'LuoGu',
+        'desc': 'LuoGu比赛日程'
+    }
+}
 
 export async function cf_api_read(ctx: Context) {
     let data = await ctx.http.get('https://codeforces.com/api/contest.list')
@@ -50,18 +100,18 @@ export async function oj_content(ctx: Context, contest_type: string) {
     }
 }
 
-export async function get_oj_format(ctx: Context, config:Config) {
+export async function get_oj_format(ctx: Context, check: string[]) {
     let res = ''
     let tmp: Array<Contest> = []
-    for (let i = 0; i < config.OJcontent.length; i++) {
-        tmp = tmp.concat(await oj_content(ctx, config.OJcontent[i]))
+    for (let i = 0; i < check.length; i++) {
+        tmp = tmp.concat(await oj_content(ctx, check[i]))
     }
     tmp = tmp.sort((a, b) => {
         return a.stime - b.stime
     })
+    if (tmp.length == 0) return '没有比赛'
     for (let i = 0; i < tmp.length; i++) {
         res = res.concat(tmp[i].to_string())
     }
-    console.log(res)
     return res;
 }

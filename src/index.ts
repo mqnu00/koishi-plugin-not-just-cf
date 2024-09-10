@@ -1,7 +1,7 @@
 import { Context, Dict, Schema, z } from 'koishi'
 import { get_oj_format, oj_abbr, oj_check, oj_list} from './oj'
 
-export const name = 'not-just-cf'
+export const name = 'not-just-cf-2'
 
 export const inject = ['database']
 
@@ -62,7 +62,7 @@ export function alert_content(ctx: Context, config: Config, content: string) {
     const bot = ctx.bots[`${config.alertConfig.botPlatform}:${config.alertConfig.botSelfid}`]
     if (bot == undefined) {
         console.log(`${config.alertConfig.botPlatform}:${config.alertConfig.botSelfid}`)
-        console.log('koishi-plugin-not-just-cf config: wrong bot_platform or bot_selfid')
+        console.log('koishi-plugin-not-just-cf-2 config: wrong bot_platform or bot_selfid')
         return 
     }
     for (let group_i = 0; group_i < config.alertConfig.alertContestList.length; group_i++) {

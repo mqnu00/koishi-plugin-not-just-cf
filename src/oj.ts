@@ -1,28 +1,32 @@
 import { Context } from "koishi";
 import { Contest } from "./type";
+import { fetchAtcoderContests } from "./crawl/atcoder";
 
 export const oj_list = [
     'codeforces',
     'NowCoder',
     'LeetCode',
-    'LuoGu'
+    'LuoGu',
+    'AtCoder'
 ]
 
 export const oj_abb = [
     'cf',
     'nc',
     'lc',
-    'lg'
+    'lg',
+    'atc'
 ]
 
 export const oj_alise = [
     'cf--codeforces',
     'nc--NowCoder',
     'lc--LeetCode',
-    'lg--LuoGu'
+    'lg--LuoGu',
+    'atc--AtCoder'
 ]
 
-export const oj_abbr: {[key: string]: {[key: string]: string}} = {
+export const oj_abbr: { [key: string]: { [key: string]: string } } = {
     'codeforces': {
         'abbr': 'cf',
         'desc': 'codeforces（cf）'
@@ -38,10 +42,14 @@ export const oj_abbr: {[key: string]: {[key: string]: string}} = {
     'LuoGu': {
         'abbr': 'lg',
         'desc': '洛谷（lg）'
+    },
+    'AtCoder': {
+        'abbr': 'atc',
+        'desc': 'AtCoder（atc）'
     }
 }
 
-export const oj_check: {[key: string]: {[key: string]: string}} = {
+export const oj_check: { [key: string]: { [key: string]: string } } = {
     'cf': {
         'abbr': 'codeforces',
         'desc': 'codeforces比赛日程'
@@ -57,6 +65,10 @@ export const oj_check: {[key: string]: {[key: string]: string}} = {
     'lg': {
         'abbr': 'LuoGu',
         'desc': 'LuoGu比赛日程'
+    },
+    'atc': {
+        'abbr': 'AtCoder',
+        'desc': 'AtCoder比赛日程'
     }
 }
 
@@ -65,7 +77,7 @@ export async function cf_api_read(ctx: Context) {
     if (data['status'] == 'OK') {
         let info: [] = data['result']
         let res: Array<Contest> = [];
-        for (let i = 0; i < info.length; i++){
+        for (let i = 0; i < info.length; i++) {
             if (info[i]['phase'] == 'FINISHED') break
             let now = new Contest()
             now.oj = 'codeforces'
@@ -83,6 +95,8 @@ export async function oj_content(ctx: Context, contest_type: string) {
 
     if (contest_type == 'codeforces') {
         return cf_api_read(ctx)
+    } if (contest_type == 'AtCoder') {
+        return fetchAtcoderContests()
     } else {
         let content = await ctx.http.get("https://algcontest.rainng.com/")
         let res: Array<Contest> = []

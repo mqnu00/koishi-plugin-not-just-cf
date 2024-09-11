@@ -1,9 +1,10 @@
 {
   "name": "koishi-plugin-not-just-cf-2",
-  "description": "实现codeforces比赛日程的提醒，但不仅仅只有cf",
-  "version": "1.0.6",
+  "description": "基于koishi-plugin-not-just-cf的二次开发，新增了AtCoder平台，并重构其他OJ的数据获取方式",
+  "version": "2.0.0",
   "contributors": [
-    "lzh 647983952@qq.com"
+    "lzh 647983952@qq.com",
+    "FaulknerWu faulkner_wu@outlook.com"
   ],
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -14,18 +15,23 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mqnu00/koishi-plugin-not-just-cf.git"
+    "url": "git+https://github.com/FaulknerWu/koishi-plugin-not-just-cf-2.git"
   },
   "keywords": [
     "chatbot",
     "koishi",
     "plugin",
     "cf",
-    "codeforces"
+    "codeforces",
+    "AtCoder",
+    "OJ",
+    "LuoGu",
+    "LeetCode",
+    "NowCoder"
   ],
   "koishi": {
     "description": {
-      "zh": "实现codeforces比赛日程的提醒，但不仅仅只有cf"
+      "zh": "基于koishi-plugin-not-just-cf的二次开发，新增了AtCoder平台，并重构其他OJ的数据获取方式"
     },
     "service": {
       "required": [
@@ -34,6 +40,8 @@
     }
   },
   "peerDependencies": {
-    "koishi": "^4.17.6"
+    "koishi": "^4.17.6",
+    "axios": "^1.7.7",
+    "cheerio": "^1.0.0"
   }
 }

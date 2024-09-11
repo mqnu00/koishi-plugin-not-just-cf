@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/koishi-plugin-not-just-cf-2?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-not-just-cf-2)
 
-基于https://github.com/mqnu00/koishi-plugin-not-just-cf二次开发，目前支持的比赛平台有：codeforces，牛客，洛谷，力扣, AtCoder
+基于 https://github.com/mqnu00/koishi-plugin-not-just-cf 二次开发，目前支持的比赛平台有：codeforces，牛客，洛谷，力扣, AtCoder
 
 当前可用的指令有：
     - all  列出一周内将要举办的所有线上赛事

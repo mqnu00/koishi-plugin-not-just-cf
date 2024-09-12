@@ -86,25 +86,24 @@ export async function oj_content(ctx: Context, contest_type: string) {
     if (contest_type == 'LeetCode') {
         return fetchLeetCodeContests()
     }
-    if (contest_type == 'NowCoder')
-    {
+    if (contest_type == 'NowCoder') {
         return fetchNowCoderContests(ctx)
     }
 }
 
 
-    export async function get_oj_format(ctx: Context, check: string[]) {
-        let res = ''
-        let tmp: Array<Contest> = []
-        for (let i = 0; i < check.length; i++) {
-            tmp = tmp.concat(await oj_content(ctx, check[i]))
-        }
-        tmp = tmp.sort((a, b) => {
-            return a.stime - b.stime
-        })
-        if (tmp.length == 0) return '没有比赛'
-        for (let i = 0; i < tmp.length; i++) {
-            res = res.concat(tmp[i].to_string())
-        }
-        return res;
+export async function get_oj_format(ctx: Context, check: string[]) {
+    let res = ''
+    let tmp: Array<Contest> = []
+    for (let i = 0; i < check.length; i++) {
+        tmp = tmp.concat(await oj_content(ctx, check[i]))
     }
+    tmp = tmp.sort((a, b) => {
+        return a.stime - b.stime
+    })
+    if (tmp.length == 0) return '没有比赛'
+    for (let i = 0; i < tmp.length; i++) {
+        res = res.concat(tmp[i].to_string())
+    }
+    return res;
+}

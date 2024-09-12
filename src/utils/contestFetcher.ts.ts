@@ -62,7 +62,6 @@ export async function fetchAtcoderContests(ctx: Context) {
             const rawStartTime = tds.eq(0).find('time').text();
             const formattedTime = rawStartTime.replace(/(\d{2})(\d{2})$/, '$1:$2');
             const startTime = new Date(formattedTime).getTime() / 1000;
-
             const name = tds.eq(1).find('a').text();
             const length = tds.eq(2).text().trim();
             const [hours, minutes] = length.split(':').map(Number);
@@ -104,9 +103,8 @@ export async function fetchLeetCodeContests() {
 
         const contests = response.data.data.allContests;
         const res: Contest[] = contests
-            .filter((contest: any) => !contest.isVirtual && contest.startTime * 1000 - currentTime <= oneWeekInSeconds)
+            .filter((contest: any) => !contest.isVirtual && contest.startTime > currentTime && contest.startTime - currentTime <= oneWeekInSeconds)
             .map((contest: any) => createContest('LeetCode', contest.title, contest.startTime, contest.duration));
-
         return res;
     } catch (error) {
         console.error("LeetCode contest fetch error:", error);
@@ -126,8 +124,8 @@ export async function fetchNowCoderContests(ctx: Context) {
             const contestTime = $(element).find('.match-time-icon').text().replace(/\s+/g, ' ').trim();
 
             const match = contestTime.match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\s+至\s+(\d{4}-\d{2}-\d{2})?\s*(\d{2}:\d{2})/);
-            const startDateTime = new Date(`${match[1]}T${match[2]}:00`);
-            const endDateTime = new Date(`${match[3]}T${match[4]}:00`);
+            const startDateTime = new Date(`${match[1]}T${match[2]}:00+08:00`);
+            const endDateTime = new Date(`${match[3]}T${match[4]}:00+08:00`);
 
             const stime = startDateTime.getTime() / 1000;
             const dtime = (endDateTime.getTime() - startDateTime.getTime()) / 1000;

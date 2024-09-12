@@ -1,5 +1,5 @@
 import { Context, Dict, Schema, z } from 'koishi'
-import { get_oj_format, oj_abbr, oj_check, oj_list} from './oj'
+import { get_oj_format, oj_abbr, oj_check, oj_list } from './oj'
 
 export const name = 'not-just-cf-2'
 
@@ -21,7 +21,7 @@ export interface Group {
     group_id: string
 }
 
-export interface Config { 
+export interface Config {
     alertConfig: {
         alertContest?: boolean
         botPlatform?: string
@@ -34,36 +34,36 @@ export interface Config {
 
 export const Config: Schema<Config> = Schema.object({
     OJcontent: Schema
-    .array(Schema.union(oj_list))
-    .default(oj_list)
-    .role('checkbox')
-    .description('插件提供的比赛日程的平台'),
+        .array(Schema.union(oj_list))
+        .default(oj_list)
+        .role('checkbox')
+        .description('插件提供的比赛日程的平台'),
     alertConfig: Schema
-    .intersect([
-        Schema.object({
-            alertContest: Schema.boolean().default(false).description('是否每天提醒群友比赛日程（默认早上9点），提醒内容是已勾选的比赛平台')
-        }),
-        Schema.union([
+        .intersect([
             Schema.object({
-                alertContest: Schema.const(true).required(),
-                botPlatform: Schema.string().required().description('机器人平台，可以查看适配器名称，比如adapter-onebot就填入onebot'),
-                botSelfid: Schema.string().required().description('机器人的账号'),
-                alertContestList: Schema.array(Schema.object({
-                    group_id: Schema.string().description('发送给哪个群(群号)').required()
-                }))
-            }).description('群组提醒设置'),
-            Schema.object({})
+                alertContest: Schema.boolean().default(false).description('是否每天提醒群友比赛日程（默认早上9点），提醒内容是已勾选的比赛平台')
+            }),
+            Schema.union([
+                Schema.object({
+                    alertContest: Schema.const(true).required(),
+                    botPlatform: Schema.string().required().description('机器人平台，可以查看适配器名称，比如adapter-onebot就填入onebot'),
+                    botSelfid: Schema.string().required().description('机器人的账号'),
+                    alertContestList: Schema.array(Schema.object({
+                        group_id: Schema.string().description('发送给哪个群(群号)').required()
+                    }))
+                }).description('群组提醒设置'),
+                Schema.object({})
+            ])
         ])
-    ])
 })
 
 export function alert_content(ctx: Context, config: Config, content: string) {
-    
+
     const bot = ctx.bots[`${config.alertConfig.botPlatform}:${config.alertConfig.botSelfid}`]
     if (bot == undefined) {
         console.log(`${config.alertConfig.botPlatform}:${config.alertConfig.botSelfid}`)
         console.log('koishi-plugin-not-just-cf-2 config: wrong bot_platform or bot_selfid')
-        return 
+        return
     }
     for (let group_i = 0; group_i < config.alertConfig.alertContestList.length; group_i++) {
         bot.sendMessage(config.alertConfig.alertContestList[group_i].group_id, content)
@@ -98,7 +98,7 @@ export function apply(ctx: Context, config: Config) {
 
     ctx.on('ready', async () => {
         if (config.alertConfig.alertContest) {
-            
+
             alert_contest_list(ctx, config)
         }
     })
@@ -115,13 +115,13 @@ export function apply(ctx: Context, config: Config) {
     }
 
     ctx.command('all', '列出一周内将要举办的所有线上赛事')
-    .action(async ({session}) => {
-        const res_list = await get_oj_format(ctx, config.OJcontent)
-        return res_list
-    })
+        .action(async ({ session }) => {
+            const res_list = await get_oj_format(ctx, config.OJcontent)
+            return res_list
+        })
 
     ctx.command('list <contest_name>', '列出一周内将要举办的指定平台线上赛事')
-        .action(async (session, contest_name ) => {
+        .action(async (session, contest_name) => {
             if (contest_name == undefined || !config.OJcontent.includes(oj_check[contest_name]['abbr'])) {
                 return `需要 list cf/nc/lc/ng \n 例子：【list cf】`
             }
@@ -129,5 +129,5 @@ export function apply(ctx: Context, config: Config) {
             const res_list = await get_oj_format(ctx, tmp)
             return res_list
         })
-    
+
 }

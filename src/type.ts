@@ -4,14 +4,16 @@ export class Contest {
     name: string
     stime: number
     dtime: number
+    link : string
     to_string() {
         let spt = '--------------------'
         let oj = this.oj
         let name = this.name
+        let link = this.link
         let stime = new DateUtil().formatDate(new Date(this.stime * 1000).toLocaleString(), 'yyyy-MM-dd HH:mm:ss')
         let dtime = this.dtime / 60
         let now: string =
-            `${name}\n比赛平台：${oj}\n比赛时间：${stime}\n比赛时长：${dtime}分钟\n${spt}\n`
+            `${name}\n比赛平台：${oj}\n比赛时间：${stime}\n比赛时长：${dtime}分钟\nLink：${link}\n${spt}\n`
         return now
     }
 }

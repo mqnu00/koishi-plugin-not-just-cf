@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-not-just-cf-2",
   "description": "基于koishi-plugin-not-just-cf的二次开发，新增了AtCoder平台，并重构其他OJ的数据获取方式",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "contributors": [
     "lzh 647983952@qq.com",
     "FaulknerWu faulkner_wu@outlook.com"

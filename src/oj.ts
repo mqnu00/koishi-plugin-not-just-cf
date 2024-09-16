@@ -3,10 +3,10 @@ import { Contest } from "./type";
 import { fetchCodeforcesContests, fetchLuoGuContests, fetchAtcoderContests, fetchLeetCodeContests, fetchNowCoderContests } from "./utils/contestFetcher.ts";
 
 export const oj_list = [
-    'codeforces',
+    'Codeforces',
     'NowCoder',
     'LeetCode',
-    'LuoGu',
+    'Luogu',
     'AtCoder'
 ]
 
@@ -19,17 +19,17 @@ export const oj_abb = [
 ]
 
 export const oj_alise = [
-    'cf--codeforces',
+    'cf--Codeforces',
     'nc--NowCoder',
     'lc--LeetCode',
-    'lg--LuoGu',
+    'lg--Luogu',
     'atc--AtCoder'
 ]
 
 export const oj_abbr: { [key: string]: { [key: string]: string } } = {
-    'codeforces': {
+    'Codeforces': {
         'abbr': 'cf',
-        'desc': 'codeforces（cf）'
+        'desc': 'Codeforces（cf）'
     },
     'NowCoder': {
         'abbr': 'nc',
@@ -39,7 +39,7 @@ export const oj_abbr: { [key: string]: { [key: string]: string } } = {
         'abbr': 'lc',
         'desc': '力扣（lc）'
     },
-    'LuoGu': {
+    'Luogu': {
         'abbr': 'lg',
         'desc': '洛谷（lg）'
     },
@@ -51,7 +51,7 @@ export const oj_abbr: { [key: string]: { [key: string]: string } } = {
 
 export const oj_check: { [key: string]: { [key: string]: string } } = {
     'cf': {
-        'abbr': 'codeforces',
+        'abbr': 'Codeforces',
         'desc': 'codeforces比赛日程'
     },
     'nc': {
@@ -63,8 +63,8 @@ export const oj_check: { [key: string]: { [key: string]: string } } = {
         'desc': 'LeetCode比赛日程'
     },
     'lg': {
-        'abbr': 'LuoGu',
-        'desc': 'LuoGu比赛日程'
+        'abbr': 'Luogu',
+        'desc': 'Luogu比赛日程'
     },
     'atc': {
         'abbr': 'AtCoder',
@@ -74,13 +74,13 @@ export const oj_check: { [key: string]: { [key: string]: string } } = {
 
 export async function oj_content(ctx: Context, contest_type: string) {
 
-    if (contest_type == 'codeforces') {
+    if (contest_type == 'Codeforces') {
         return fetchCodeforcesContests(ctx)
     }
     if (contest_type == 'AtCoder') {
         return fetchAtcoderContests(ctx)
     }
-    if (contest_type == 'LuoGu') {
+    if (contest_type == 'Luogu') {
         return fetchLuoGuContests(ctx)
     }
     if (contest_type == 'LeetCode') {

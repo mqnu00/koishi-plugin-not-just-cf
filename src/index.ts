@@ -114,13 +114,13 @@ export function apply(ctx: Context, config: Config) {
         contest_check = contest_check.concat(`${oj_abbr[config.OJcontent[i]]['desc']}\n`)
     }
 
-    ctx.command('all', '列出一周内将要举办的所有线上赛事')
+    ctx.command('all', '列出三天内将要举办的所有线上赛事')
         .action(async ({ session }) => {
             const res_list = await get_oj_format(ctx, config.OJcontent)
             return res_list
         })
 
-    ctx.command('list <contest_name>', '列出一周内将要举办的指定平台线上赛事')
+    ctx.command('list <contest_name>', '列出三天内将要举办的指定平台线上赛事')
         .action(async (session, contest_name) => {
             if (contest_name == undefined || !config.OJcontent.includes(oj_check[contest_name]['abbr'])) {
                 return `需要 list cf/nc/lc/ng \n 例子：【list cf】`

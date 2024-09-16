@@ -29,7 +29,7 @@ export async function fetchCodeforcesContests(ctx: Context) {
             .map(contest => {
                 const contestLink = `https://codeforces.com/contest/${contest['id']}`;
                 return createContest(
-                    'codeforces',
+                    'Codeforces',
                     contest['name'],
                     contest['startTimeSeconds'],
                     contest['durationSeconds'],
@@ -53,7 +53,7 @@ export async function fetchLuoGuContests(ctx: Context) {
             .filter(contest => contest.endTime > currentTime && contest.startTime - currentTime <= threeDaysInSeconds)
             .map(contest => {
                 const link = `https://www.luogu.com.cn/contest/${contest.id}`;
-                return createContest('luogu', contest.name, contest.startTime, contest.endTime - contest.startTime, link);
+                return createContest('Luogu', contest.name, contest.startTime, contest.endTime - contest.startTime, link);
             });
 
         return res;

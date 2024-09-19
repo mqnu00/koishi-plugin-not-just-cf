@@ -100,6 +100,18 @@ export async function oj_content(ctx: Context, contest_type: string) {
     }
 }
 
+export async function get_oj(ctx: Context, check: string[]) {
+    let res = ''
+    let tmp: Array<Contest> = []
+    for (let i = 0; i < check.length; i++) {
+        tmp = tmp.concat(await oj_content(ctx, check[i]))
+    }
+    tmp = tmp.sort((a, b) => {
+        return a.stime - b.stime
+    })
+    return tmp;
+}
+
 export async function get_oj_format(ctx: Context, check: string[]) {
     let res = ''
     let tmp: Array<Contest> = []

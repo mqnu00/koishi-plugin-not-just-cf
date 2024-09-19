@@ -2,6 +2,7 @@ import { DateUtil } from "./utils/time_util"
 export class Contest {
     oj:string
     name: string
+    // 单位 秒
     stime: number
     dtime: number
     to_string() {

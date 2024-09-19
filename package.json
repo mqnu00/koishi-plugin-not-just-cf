@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-not-just-cf",
   "description": "实现codeforces比赛日程的提醒，但不仅仅只有cf",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "contributors": [
     "lzh 647983952@qq.com"
   ],

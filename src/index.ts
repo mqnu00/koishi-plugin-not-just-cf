@@ -119,16 +119,20 @@ async function check_call_timer(ctx: Context, config: Config, contest_timer_call
             obj_list.splice(j, 1)
         }
     }
-    for (let i = 0; i < obj_list.length; i++) {
-        let callback = ctx.timer.setTimeout(() => {
-            alert_content(ctx, config, obj_list[i].to_string() + '\n距离比赛开始还有30分钟')
-        }, obj_list[i].stime - 30 * 60)
-        contest_timer_callback.push([obj_list[i], callback])
-    }
     // 获取当前日期
     const now = new Date();
     // 创建一个新的日期对象，表示明天早上九点
     const tomorrow9am = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 9, 0, 0);
+    for (let i = 0; i < obj_list.length; i++) {
+        let timer_delay = obj_list[i].stime * 1000 - now.getTime() - 30 * 60 * 1000;
+        // console.log(obj_list[i].stime * 1000 - now.getTime() - 30 * 60)
+        // let timer_delay = 1000;
+        let callback = ctx.timer.setTimeout(() => {
+            alert_content(ctx, config, obj_list[i].to_string() + '\n距离比赛开始还有30分钟')
+        }, timer_delay)
+        console.log(timer_delay)
+        contest_timer_callback.push([obj_list[i], callback])
+    }
     // 计算时间戳差值
     let diff = tomorrow9am.getTime() - now.getTime();
     ctx.timer.setTimeout(() => {

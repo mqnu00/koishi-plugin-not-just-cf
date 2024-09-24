@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-not-just-cf",
-  "description": "实现codeforces比赛日程的提醒，但不仅仅只有cf",
-  "version": "1.0.7",
+  "description": "实现codeforces比赛日程的提醒，但不仅仅只有cf\n新增实验性功能：比赛前30分钟提醒",
+  "version": "1.0.8",
   "contributors": [
     "lzh 647983952@qq.com"
   ],
@@ -25,7 +25,7 @@
   ],
   "koishi": {
     "description": {
-      "zh": "实现codeforces比赛日程的提醒，但不仅仅只有cf"
+      "zh": "实现codeforces比赛日程的提醒，但不仅仅只有cf\n新增实验性功能：比赛前30分钟提醒"
     },
     "service": {
       "required": [

@@ -1,19 +1,22 @@
 import { Context, Dict, Schema, z } from 'koishi'
-import { get_oj_format, oj_abbr, oj_check, oj_list } from './oj'
+import { get_oj, get_oj_format, oj_abbr, oj_check, oj_content, oj_list} from './oj'
+import { queryObjects } from 'v8'
+import { stringify } from 'querystring'
+import { Contest } from './type'
 
 export const name = 'not-just-cf-2'
 
-export const inject = ['database']
+// export const inject = ['database']
 
 declare module 'koishi' {
     interface Tables {
-        contest_alert: {
-            id: number
-            name: string
-            start_time: number
-            alert_time: number
-            cut_time: number
-        }
+        // contest_alert: {
+        //     id: number
+        //     name: string
+        //     start_time: number
+        //     alert_time: number
+        //     cut_time: number
+        // }
     }
 }
 
@@ -24,6 +27,7 @@ export interface Group {
 export interface Config {
     alertConfig: {
         alertContest?: boolean
+        alertBeforeContest?: boolean
         botPlatform?: string
         botSelfid?: string
         alertContestList?: Group[]
@@ -41,19 +45,15 @@ export const Config: Schema<Config> = Schema.object({
     alertConfig: Schema
         .intersect([
             Schema.object({
-                alertContest: Schema.boolean().default(false).description('是否每天提醒群友比赛日程（默认早上9点），提醒内容是已勾选的比赛平台')
-            }),
-            Schema.union([
-                Schema.object({
-                    alertContest: Schema.const(true).required(),
-                    botPlatform: Schema.string().required().description('机器人平台，可以查看适配器名称，比如adapter-onebot就填入onebot'),
-                    botSelfid: Schema.string().required().description('机器人的账号'),
-                    alertContestList: Schema.array(Schema.object({
-                        group_id: Schema.string().description('发送给哪个群(群号)').required()
-                    }))
-                }).description('群组提醒设置'),
-                Schema.object({})
-            ])
+                alertContest: Schema.const(true).required(),
+                alertBeforeContest: Schema.boolean().default(false).description('是否在比赛前30分钟提醒群友').experimental(),
+                botPlatform: Schema.string().required().description('机器人平台，可以查看适配器名称，比如adapter-onebot就填入onebot'),
+                botSelfid: Schema.string().required().description('机器人的账号'),
+                alertContestList: Schema.array(Schema.object({
+                    group_id: Schema.string().description('发送给哪个群(群号)').required()
+                }))
+            }).description('群组提醒设置'),
+            Schema.object({})
         ])
 })
 
@@ -78,12 +78,60 @@ export async function alert_contest_list(ctx: Context, config: Config) {
     // 计算时间戳差值
     let diff = tomorrow9am.getTime() - now.getTime();
     // diff = 1000
-    const res_list = await get_oj_format(ctx, config.OJcontent)
+    const str_list = await get_oj_format(ctx, config.OJcontent)
     ctx.setTimeout(() => {
-        alert_content(ctx, config, res_list)
+        alert_content(ctx, config, str_list)
     }, diff)
+}
+
+/* async function check_data(ctx: Context, config: Config) {
+    
+}
+
+async function get_data(ctx: Context) {
+    return await ctx.database.get('contest_alert', {})
+} */
+
+// 实验性功能 比赛前30分钟提醒
+async function check_call_timer(ctx: Context, config: Config, contest_timer_callback: [Contest, () => void][]) {
+
+    let obj_list = await get_oj(ctx, config.OJcontent)
+    for (let i = 0; i < contest_timer_callback.length; i++) {
+        let check = false
+        let j: number
+        for (j = 0; j < obj_list.length; j++) {
+            if (obj_list[j].name == contest_timer_callback[i][0].name &&
+                obj_list[j].stime == contest_timer_callback[i][0].stime
+            ) {
+                check = true
+                break
+            }
+        }
+        if (!check) {
+            contest_timer_callback[i][1]()
+            contest_timer_callback.splice(i, 1)
+        } else {
+            obj_list.splice(j, 1)
+        }
+    }
+    // 获取当前日期
+    const now = new Date();
+    // 创建一个新的日期对象，表示明天早上九点
+    const tomorrow9am = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 9, 0, 0);
+    for (let i = 0; i < obj_list.length; i++) {
+        let timer_delay = obj_list[i].stime * 1000 - now.getTime() - 30 * 60 * 1000;
+        // console.log(obj_list[i].stime * 1000 - now.getTime() - 30 * 60)
+        // let timer_delay = 1000;
+        let callback = ctx.timer.setTimeout(() => {
+            alert_content(ctx, config, obj_list[i].to_string() + '\n距离比赛开始还有30分钟')
+        }, timer_delay)
+        console.log(timer_delay)
+        contest_timer_callback.push([obj_list[i], callback])
+    }
+    // 计算时间戳差值
+    let diff = tomorrow9am.getTime() - now.getTime();
     ctx.timer.setTimeout(() => {
-        alert_contest_list(ctx, config)
+        check_call_timer(ctx, config, contest_timer_callback)
     }, diff)
 }
 
@@ -93,13 +141,19 @@ export function apply(ctx: Context, config: Config) {
     //     name: 'string',
     //     start_time: 'integer',
     //     alert_time: 'integer',
-    //     cut_time: 'integer'
+    //     cut_time: 'integer',
     // })
+
+    let contest_timer_callback: [Contest, () => void][] = []
 
     ctx.on('ready', async () => {
         if (config.alertConfig.alertContest) {
 
             alert_contest_list(ctx, config)
+        }
+        // 实验性功能 比赛前30分钟提醒
+        if (config.alertConfig.alertBeforeContest) {
+            check_call_timer(ctx, config, contest_timer_callback)
         }
     })
     // if (config.alertContest) {
@@ -109,6 +163,9 @@ export function apply(ctx: Context, config: Config) {
     // }
 
     // write your plugin here
+    // 测试数据库
+    // check_data(ctx, config)
+
     let contest_check = ''
     for (let i = 0; i < config.OJcontent.length; i++) {
         contest_check = contest_check.concat(`${oj_abbr[config.OJcontent[i]]['desc']}\n`)
@@ -129,5 +186,9 @@ export function apply(ctx: Context, config: Config) {
             const res_list = await get_oj_format(ctx, tmp)
             return res_list
         })
-
+    // ctx.command('test', 'test')
+    //     .action(async (session) => {
+    //         contest_check = contest_check + 1
+    //         return contest_check 
+    // })
 }

@@ -1,7 +1,7 @@
 {
-  "name": "koishi-plugin-not-just-cf-2",
-  "description": "基于koishi-plugin-not-just-cf的二次开发，新增了AtCoder平台，并重构其他OJ的数据获取方式",
-  "version": "2.0.13",
+  "name": "koishi-plugin-not-just-cf",
+  "description": "实现codeforces比赛日程的提醒，但不仅仅只有cf\n新增实验性功能：比赛前30分钟提醒",
+  "version": "1.0.8",
   "contributors": [
     "lzh 647983952@qq.com",
     "FaulknerWu faulkner_wu@outlook.com"
@@ -31,7 +31,7 @@
   ],
   "koishi": {
     "description": {
-      "zh": "基于koishi-plugin-not-just-cf的二次开发，新增了AtCoder平台，并重构其他OJ的数据获取方式"
+      "zh": "实现codeforces比赛日程的提醒，但不仅仅只有cf\n新增实验性功能：比赛前30分钟提醒"
     },
     "service": {
       "required": [

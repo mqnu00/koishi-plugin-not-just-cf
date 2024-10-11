@@ -45,15 +45,21 @@ export const Config: Schema<Config> = Schema.object({
     alertConfig: Schema
         .intersect([
             Schema.object({
-                alertContest: Schema.const(true).required(),
-                alertBeforeContest: Schema.boolean().default(false).description('是否在比赛前30分钟提醒群友').experimental(),
-                botPlatform: Schema.string().required().description('机器人平台，可以查看适配器名称，比如adapter-onebot就填入onebot'),
-                botSelfid: Schema.string().required().description('机器人的账号'),
-                alertContestList: Schema.array(Schema.object({
-                    group_id: Schema.string().description('发送给哪个群(群号)').required()
-                }))
+                alertContest: Schema.boolean().default(false).description('是否每天早上9点提醒群友')
             }).description('群组提醒设置'),
-            Schema.object({})
+            Schema.union([
+                Schema.object({
+                    alertContest: Schema.const(true).required(),
+                    alertBeforeContest: Schema.boolean().default(false).description('是否在比赛前30分钟提醒群友').experimental(),
+                    botPlatform: Schema.string().required().description('机器人平台，可以查看适配器名称，比如adapter-onebot就填入onebot'),
+                    botSelfid: Schema.string().required().description('机器人的账号'),
+                    alertContestList: Schema.array(Schema.object({
+                        group_id: Schema.string().description('发送给哪个群(群号)').required()
+                    }))
+                }),
+                Schema.object({})
+            ])
+            
         ])
 })
 

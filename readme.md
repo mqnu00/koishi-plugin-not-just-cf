@@ -1,8 +1,6 @@
-# koishi-plugin-not-just-cf-2
+# koishi-plugin-not-just-cf
 
-[![npm](https://img.shields.io/npm/v/koishi-plugin-not-just-cf-2?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-not-just-cf-2)
-
-基于 https://github.com/mqnu00/koishi-plugin-not-just-cf 二次开发，目前支持的比赛平台有：codeforces，牛客，洛谷，力扣, AtCoder
+[![npm](https://img.shields.io/npm/v/koishi-plugin-not-just-cf?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-not-just-cf)
 
 当前可用的指令有：
 
@@ -11,3 +9,7 @@
 - 目前支持的比赛平台有：codeforces，牛客，洛谷，力扣，atcoder
 - 定时提醒比赛日程
 - 实验性功能：比赛前30分钟提醒群友
+
+## 感谢
+
+感谢 [FaulknerWu](https://github.com/FaulknerWu) 贡献的比赛爬虫代码

@@ -5,6 +5,12 @@ export class Contest {
     // 单位 秒
     stime: number
     dtime: number
+    constructor(oj?: string, name?: string, stime?: number, dtime?: number){
+        this.oj = oj
+        this.name = name
+        this.stime = stime
+        this.dtime = dtime
+    }
     to_string() {
         let spt = '--------------------'
         let oj = this.oj

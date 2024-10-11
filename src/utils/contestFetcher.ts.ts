@@ -67,27 +67,35 @@ export async function fetchLuoGuContests(ctx: Context) {
 export async function fetchAtcoderContests(ctx: Context) {
     const currentTime = getCurrentTime();
     try {
-        const data = await ctx.http.get('https://atcoder.jp/contests/');
-        const $ = cheerio.load(data);
+        const data = await ctx.http.get('https://github.moeyy.xyz/https://raw.githubusercontent.com/mqnu00/ACM-contest-calender-maker/refs/heads/main/contest.json');
+        const $ = JSON.parse(data)
+        // console.log($.timezone)
+        const now = new Date()
+        const res = $.contests.filter(contest => contest.oj === 'atcoder').map(info => new Contest(info.oj, info.name, info.stime, info.dtime)).filter(info => info.stime * 1000 <= (now.getTime() + 3 * 24 * 60 * 60 * 1000))
+        // console.log(now.getTime() + 3 * 24 * 60 * 60 * 1000)
+        // console.log(res)
+        // const data = await ctx.http.get('https://atcoder.jp/contests/');
+        // const $ = cheerio.load(data);
 
-        const res: Contest[] = [];
-        $('table').eq(1).find('tbody tr').each((_, element) => {
-            const tds = $(element).find('td');
-            const rawStartTime = tds.eq(0).find('time').text();
-            const formattedTime = rawStartTime.replace(/(\d{2})(\d{2})$/, '$1:$2');
-            const startTime = new Date(formattedTime).getTime() / 1000;
-            const name = tds.eq(1).find('a').text();
-            const link = 'https://atcoder.jp' + tds.eq(1).find('a').attr('href');
-            const length = tds.eq(2).text().trim();
-            const [hours, minutes] = length.split(':').map(Number);
-            const duration = (hours * 3600) + (minutes * 60);
+        // const res: Contest[] = [];
+        // $('table').eq(1).find('tbody tr').each((_, element) => {
+        //     const tds = $(element).find('td');
+        //     const rawStartTime = tds.eq(0).find('time').text();
+        //     const formattedTime = rawStartTime.replace(/(\d{2})(\d{2})$/, '$1:$2');
+        //     const startTime = new Date(formattedTime).getTime() / 1000;
+        //     const name = tds.eq(1).find('a').text();
+        //     console.log(name)
+        //     const link = 'https://atcoder.jp' + tds.eq(1).find('a').attr('href');
+        //     const length = tds.eq(2).text().trim();
+        //     const [hours, minutes] = length.split(':').map(Number);
+        //     const duration = (hours * 3600) + (minutes * 60);
 
-            const endTime = startTime + duration;
+        //     const endTime = startTime + duration;
 
-            if (endTime > currentTime && startTime - currentTime <= threeDaysInSeconds) {
-                res.push(createContest('AtCoder', name, startTime, duration));
-            }
-        });
+        //     if (endTime > currentTime && startTime - currentTime <= threeDaysInSeconds) {
+        //         res.push(createContest('AtCoder', name, startTime, duration));
+        //     }
+        // });
 
         return res;
     } catch (error) {

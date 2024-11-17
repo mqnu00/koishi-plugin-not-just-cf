@@ -63,7 +63,8 @@ export const Config: Schema<Config> = Schema.object({
         ])
 })
 
-export function alert_content(ctx: Context, config: Config, content: string) {
+// 定时提醒的行为
+export async function alert_content(ctx: Context, config: Config, contest_func: (ctx: Context, check: string[]) => Promise<string>) {
 
     const bot = ctx.bots[`${config.alertConfig.botPlatform}:${config.alertConfig.botSelfid}`]
     if (bot == undefined) {
@@ -72,10 +73,11 @@ export function alert_content(ctx: Context, config: Config, content: string) {
         return
     }
     for (let group_i = 0; group_i < config.alertConfig.alertContestList.length; group_i++) {
-        bot.sendMessage(config.alertConfig.alertContestList[group_i].group_id, content)
+        bot.sendMessage(config.alertConfig.alertContestList[group_i].group_id, await contest_func(ctx, config.OJcontent))
     }
 }
 
+// 比赛列表定时提醒
 export async function alert_contest_list(ctx: Context, config: Config) {
     // 获取当前日期
     const now = new Date();
@@ -86,7 +88,10 @@ export async function alert_contest_list(ctx: Context, config: Config) {
     // diff = 1000
     const str_list = await get_oj_format(ctx, config.OJcontent)
     ctx.setTimeout(() => {
-        alert_content(ctx, config, str_list)
+        alert_content(ctx, config, get_oj_format)
+    }, diff)
+    ctx.setTimeout(() => {
+        alert_contest_list(ctx, config)
     }, diff)
 }
 

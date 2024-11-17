@@ -13,3 +13,9 @@
 ## 感谢
 
 感谢 [FaulknerWu](https://github.com/FaulknerWu) 贡献的比赛爬虫代码
+
+## 更新内容
+
+v1.0.9: FaulknerWu 对爬虫代码的重构和atcoder爬虫
+
+v1.0.10: 修复定时提醒比赛列表功能 

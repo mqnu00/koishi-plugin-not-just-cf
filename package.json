@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-not-just-cf",
   "description": "实现codeforces比赛日程的提醒，但不仅仅只有cf\n新增实验性功能：比赛前30分钟提醒",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "contributors": [
     "lzh 647983952@qq.com",
     "FaulknerWu faulkner_wu@outlook.com"
@@ -15,7 +15,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FaulknerWu/koishi-plugin-not-just-cf-2.git"
+    "url": "git+https://github.com/mqnu00/koishi-plugin-not-just-cf.git"
   },
   "keywords": [
     "chatbot",

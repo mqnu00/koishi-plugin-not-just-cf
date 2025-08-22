@@ -18,4 +18,6 @@
 
 v1.0.9: FaulknerWu 对爬虫代码的重构和atcoder爬虫
 
-v1.0.10: 修复定时提醒比赛列表功能 
+v1.0.10: 修复定时提醒比赛列表功能
+
+v1.1.0: 增加 git proxy，因为获取 atcoder比赛数据需要访问 github

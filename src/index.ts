@@ -32,7 +32,8 @@ export interface Config {
         botSelfid?: string
         alertContestList?: Group[]
     },
-    OJcontent?: string[]
+    OJcontent?: string[],
+    githubProxy: string
 }
 
 
@@ -60,18 +61,23 @@ export const Config: Schema<Config> = Schema.object({
                 Schema.object({})
             ])
             
-        ])
+        ]),
+    githubProxy: Schema.string().role('githubProxy').default('https://gh-proxy.com/').description('为空表示不使用github代理')
 })
 
 // 定时提醒的行为
 export async function alert_content(ctx: Context, config: Config, contest_func: (ctx: Context, check: string[]) => Promise<string>) {
 
     const bot = ctx.bots[`${config.alertConfig.botPlatform}:${config.alertConfig.botSelfid}`]
+    // const bot = ctx.bots[0]
+    // console.log(bot)
     if (bot == undefined) {
         console.log(`${config.alertConfig.botPlatform}:${config.alertConfig.botSelfid}`)
         console.log('koishi-plugin-not-just-cf-2 config: wrong bot_platform or bot_selfid')
         return
     }
+    console.info('daily timer msg')
+    // bot.sendMessage('#', await contest_func(ctx, config.OJcontent))
     for (let group_i = 0; group_i < config.alertConfig.alertContestList.length; group_i++) {
         bot.sendMessage(config.alertConfig.alertContestList[group_i].group_id, await contest_func(ctx, config.OJcontent))
     }
@@ -133,9 +139,7 @@ async function check_call_timer(ctx: Context, config: Config, contest_timer_call
         let timer_delay = obj_list[i].stime * 1000 - now.getTime() - 30 * 60 * 1000;
         // console.log(obj_list[i].stime * 1000 - now.getTime() - 30 * 60)
         // let timer_delay = 1000;
-        let callback = ctx.timer.setTimeout(() => {
-            alert_content(ctx, config, obj_list[i].to_string() + '\n距离比赛开始还有30分钟')
-        }, timer_delay)
+        let callback = ctx.timer.setTimeout(() => alert_content(ctx, config, async () => obj_list[i].to_string() + '\n距离比赛开始还有30分钟'), timer_delay)
         console.log(timer_delay)
         contest_timer_callback.push([obj_list[i], callback])
     }
@@ -158,6 +162,7 @@ export function apply(ctx: Context, config: Config) {
     let contest_timer_callback: [Contest, () => void][] = []
 
     ctx.on('ready', async () => {
+        // alert_contest_list(ctx, config)
         if (config.alertConfig.alertContest) {
 
             alert_contest_list(ctx, config)
@@ -181,6 +186,8 @@ export function apply(ctx: Context, config: Config) {
     for (let i = 0; i < config.OJcontent.length; i++) {
         contest_check = contest_check.concat(`${oj_abbr[config.OJcontent[i]]['desc']}\n`)
     }
+
+    // console.log(ctx.bots)
 
     ctx.command('all', '列出三天内将要举办的所有线上赛事')
         .action(async ({ session }) => {

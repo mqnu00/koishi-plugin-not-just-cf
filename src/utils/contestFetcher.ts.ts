@@ -67,7 +67,7 @@ export async function fetchLuoGuContests(ctx: Context) {
 export async function fetchAtcoderContests(ctx: Context) {
     const currentTime = getCurrentTime();
     try {
-        const data = await ctx.http.get('https://github.moeyy.xyz/https://raw.githubusercontent.com/mqnu00/ACM-contest-calender-maker/refs/heads/main/contest.json');
+        const data = await ctx.http.get(`${ctx.config.githubProxy}https://raw.githubusercontent.com/mqnu00/ACM-contest-calender-maker/refs/heads/main/contest.json`);
         const $ = JSON.parse(data)
         // console.log($.timezone)
         const now = new Date()

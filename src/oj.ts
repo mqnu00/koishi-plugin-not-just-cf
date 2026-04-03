@@ -72,30 +72,33 @@ export const oj_check: { [key: string]: { [key: string]: string } } = {
     }
 }
 
-export async function oj_content(ctx: Context, contest_type: string) {
+export async function oj_content(ctx: Context, contest_type: string, contestWindowDays: number = 3) {
 
     if (contest_type == 'Codeforces') {
-        return fetchCodeforcesContests(ctx)
+        return fetchCodeforcesContests(ctx, contestWindowDays)
     }
     if (contest_type == 'AtCoder') {
-        return fetchAtcoderContests(ctx)
+        return fetchAtcoderContests(ctx, contestWindowDays)
     }
     if (contest_type == 'Luogu') {
-        return fetchLuoGuContests(ctx)
+        return fetchLuoGuContests(ctx, contestWindowDays)
     }
     if (contest_type == 'LeetCode') {
-        return fetchLeetCodeContests()
+        return fetchLeetCodeContests(contestWindowDays)
     }
     if (contest_type == 'NowCoder') {
-        return fetchNowCoderContests(ctx)
+        return fetchNowCoderContests(ctx, contestWindowDays)
     }
 }
 
-export async function get_oj(ctx: Context, check: string[]) {
+export async function get_oj(ctx: Context, check: string[], contestWindowDays: number = 3) {
     let res = ''
     let tmp: Array<Contest> = []
     for (let i = 0; i < check.length; i++) {
-        tmp = tmp.concat(await oj_content(ctx, check[i]))
+        const contestList = await oj_content(ctx, check[i], contestWindowDays)
+        if (contestList) {
+            tmp = tmp.concat(contestList)
+        }
     }
     tmp = tmp.sort((a, b) => {
         return a.stime - b.stime
@@ -103,11 +106,14 @@ export async function get_oj(ctx: Context, check: string[]) {
     return tmp;
 }
 
-export async function get_oj_format(ctx: Context, check: string[]) {
+export async function get_oj_format(ctx: Context, check: string[], contestWindowDays: number = 3) {
     let res = ''
     let tmp: Array<Contest> = []
     for (let i = 0; i < check.length; i++) {
-        tmp = tmp.concat(await oj_content(ctx, check[i]))
+        const contestList = await oj_content(ctx, check[i], contestWindowDays)
+        if (contestList) {
+            tmp = tmp.concat(contestList)
+        }
     }
     tmp = tmp.sort((a, b) => {
         return a.stime - b.stime

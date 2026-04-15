@@ -33,9 +33,16 @@ export interface Config {
         alertContestList?: Group[]
     },
     OJcontent?: string[],
+    contestWindowDays: number,
     githubProxy: string
 }
 
+function getContestWindowText(contestWindowDays: number, contestTarget: string) {
+    if (contestWindowDays === 0) {
+        return `列出未来的${contestTarget}`
+    }
+    return `列出${contestWindowDays}天内将要举办的${contestTarget}`
+}
 
 export const Config: Schema<Config> = Schema.object({
     OJcontent: Schema
@@ -43,6 +50,11 @@ export const Config: Schema<Config> = Schema.object({
         .default(oj_list)
         .role('checkbox')
         .description('插件提供的比赛日程的平台'),
+    contestWindowDays: Schema
+        .number()
+        .min(0)
+        .default(3)
+        .description('获取未来几天内的比赛，0 表示返回所有未来比赛'),
     alertConfig: Schema
         .intersect([
             Schema.object({
@@ -66,7 +78,7 @@ export const Config: Schema<Config> = Schema.object({
 })
 
 // 定时提醒的行为
-export async function alert_content(ctx: Context, config: Config, contest_func: (ctx: Context, check: string[]) => Promise<string>) {
+export async function alert_content(ctx: Context, config: Config, contest_func: (ctx: Context, check: string[], contestWindowDays: number) => Promise<string>) {
 
     const bot = ctx.bots[`${config.alertConfig.botPlatform}:${config.alertConfig.botSelfid}`]
     // const bot = ctx.bots[0]
@@ -79,7 +91,7 @@ export async function alert_content(ctx: Context, config: Config, contest_func: 
     console.info('daily timer msg')
     // bot.sendMessage('#', await contest_func(ctx, config.OJcontent))
     for (let group_i = 0; group_i < config.alertConfig.alertContestList.length; group_i++) {
-        bot.sendMessage(config.alertConfig.alertContestList[group_i].group_id, await contest_func(ctx, config.OJcontent))
+        bot.sendMessage(config.alertConfig.alertContestList[group_i].group_id, await contest_func(ctx, config.OJcontent, config.contestWindowDays))
     }
 }
 
@@ -92,7 +104,6 @@ export async function alert_contest_list(ctx: Context, config: Config) {
     // 计算时间戳差值
     let diff = tomorrow9am.getTime() - now.getTime();
     // diff = 1000
-    const str_list = await get_oj_format(ctx, config.OJcontent)
     ctx.setTimeout(() => {
         alert_content(ctx, config, get_oj_format)
     }, diff)
@@ -112,7 +123,7 @@ async function get_data(ctx: Context) {
 // 实验性功能 比赛前30分钟提醒
 async function check_call_timer(ctx: Context, config: Config, contest_timer_callback: [Contest, () => void][]) {
 
-    let obj_list = await get_oj(ctx, config.OJcontent)
+    let obj_list = await get_oj(ctx, config.OJcontent, config.contestWindowDays)
     for (let i = 0; i < contest_timer_callback.length; i++) {
         let check = false
         let j: number
@@ -189,19 +200,19 @@ export function apply(ctx: Context, config: Config) {
 
     // console.log(ctx.bots)
 
-    ctx.command('all', '列出三天内将要举办的所有线上赛事')
+    ctx.command('all', getContestWindowText(config.contestWindowDays, '所有线上赛事'))
         .action(async ({ session }) => {
-            const res_list = await get_oj_format(ctx, config.OJcontent)
+            const res_list = await get_oj_format(ctx, config.OJcontent, config.contestWindowDays)
             return res_list
         })
 
-    ctx.command('list <contest_name>', '列出三天内将要举办的指定平台线上赛事')
+    ctx.command('list <contest_name>', getContestWindowText(config.contestWindowDays, '指定平台线上赛事'))
         .action(async (session, contest_name) => {
             if (contest_name == undefined || !config.OJcontent.includes(oj_check[contest_name]['abbr'])) {
-                return `需要 list cf/nc/lc/ng \n 例子：【list cf】`
+                return `需要 list cf/nc/lc/lg/atc \n 例子：【list cf】`
             }
             let tmp = [oj_check[contest_name]['abbr']]
-            const res_list = await get_oj_format(ctx, tmp)
+            const res_list = await get_oj_format(ctx, tmp, config.contestWindowDays)
             return res_list
         })
     // ctx.command('test', 'test')

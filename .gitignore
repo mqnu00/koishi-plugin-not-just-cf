@@ -18,3 +18,9 @@ tsconfig.tsbuildinfo
 *.njsproj
 *.sln
 *.js
+
+tmp
+temp
+
+**/__pycache__/
+*.pyc

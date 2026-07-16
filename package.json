@@ -1,7 +1,7 @@
 {
-  "name": "koishi-plugin-not-just-cf",
-  "description": "实现codeforces比赛日程的提醒，但不仅仅只有cf\n新增实验性功能：比赛前30分钟提醒",
-  "version": "1.2.0",
+  "name": "koishi-plugin-not-just-cf-vincentzyu-fork",
+  "description": "📅🏆 聚合 Codeforces、NowCoder、LeetCode、Luogu 与 AtCoder 的 Koishi 多平台算法赛事助手，支持日程查询、每日与赛前提醒、QQ Markdown 交互，以及 Takumi 和 Puppeteer 双引擎图片输出。🖼️",
+  "version": "2.1.5-beta.9+20260716",
   "contributors": [
     "lzh 647983952@qq.com",
     "FaulknerWu faulkner_wu@outlook.com",
@@ -11,12 +11,13 @@
   "typings": "lib/index.d.ts",
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "assets"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mqnu00/koishi-plugin-not-just-cf.git"
+    "url": "https://github.com/mqnu00/koishi-plugin-not-just-cf.git"
   },
   "keywords": [
     "chatbot",
@@ -32,17 +33,26 @@
   ],
   "koishi": {
     "description": {
-      "zh": "实现codeforces比赛日程的提醒，但不仅仅只有cf\n新增实验性功能和atcoder"
+      "zh": "📅🏆 多平台算法赛事助手：聚合 Codeforces、NowCoder、LeetCode、Luogu 与 AtCoder，支持日程查询、每日与赛前提醒、QQ Markdown 交互，以及 Takumi 和 Puppeteer 双引擎图片输出。🖼️",
+      "en": "📅🏆 Multi-OJ contest assistant for schedules, daily and pre-contest alerts, QQ Markdown interactions, and dual-engine image rendering with Takumi or Puppeteer. 🖼️"
     },
     "service": {
       "required": [
-        "database"
+        "http"
+      ],
+      "optional": [
+        "cron",
+        "puppeteer"
       ]
     }
   },
-  "peerDependencies": {
+  "dependencies": {
+    "@takumi-rs/helpers": "^1.8.7",
+    "@takumi-rs/wasm": "^1.8.7",
     "axios": "^1.7.7",
-    "cheerio": "^1.0.0",
+    "cheerio": "^1.0.0"
+  },
+  "peerDependencies": {
     "koishi": "^4.17.6"
   },
   "devDependencies": {
